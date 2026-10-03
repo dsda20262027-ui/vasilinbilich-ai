@@ -6,6 +6,17 @@ document.getElementById("settingsBtn").addEventListener("click",()=>settings.sho
 document.getElementById("saveSettings").addEventListener("click",()=>{const v=serverUrl.value.trim().replace(/\/$/,"");if(v)localStorage.setItem("vasilin_server_url",v)});
 function addTextMessage(role,text){const w=document.createElement("div");w.className="message "+role;w.innerHTML='<div class="role">'+(role==="user"?"Ты":"ВасилинБилич AI")+'</div><div class="bubble"></div>';w.querySelector(".bubble").textContent=text;messages.appendChild(w);messages.scrollTop=messages.scrollHeight}
 function addImageMessage(data){const w=document.createElement("div");w.className="message assistant";w.innerHTML='<div class="role">ВасилинБилич AI</div><div class="bubble imageBubble"></div>';const img=document.createElement("img");img.src="data:image/png;base64,"+data;w.querySelector(".bubble").appendChild(img);messages.appendChild(w);messages.scrollTop=messages.scrollHeight}
+async function apiRequest(baseUrl,endpoint,payload){
+  if(window.vasilin && typeof window.vasilin.request==="function"){
+    return window.vasilin.request(baseUrl,endpoint,payload);
+  }
+  const url=new URL(endpoint,baseUrl.endsWith("/")?baseUrl:baseUrl+"/").toString();
+  const response=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload||{})});
+  const raw=await response.text();
+  let data; try{data=JSON.parse(raw)}catch{data={error:raw||"Некорректный ответ сервера."}}
+  if(!response.ok) throw new Error(data.error||("HTTP "+response.status));
+  return data;
+}
 async function submit(){const text=prompt.value.trim();if(!text||send.disabled)return;addTextMessage("user",text);prompt.value="";send.disabled=true;status.textContent=mode==="chat"?"Думаю...":"Создаю изображение...";
-try{const baseUrl=localStorage.getItem("vasilin_server_url")||"http://localhost:8787";if(mode==="chat"){const r=await window.vasilin.request(baseUrl,"/chat",{message:text,history});const answer=r.text||"Пустой ответ.";addTextMessage("assistant",answer);history.push({role:"user",content:text},{role:"assistant",content:answer})}else{const r=await window.vasilin.request(baseUrl,"/image",{prompt:text});addImageMessage(r.data)}status.textContent=""}catch(e){addTextMessage("assistant","Ошибка: "+e.message);status.textContent="Проверь адрес сервера и его доступность."}finally{send.disabled=false;prompt.focus()}}
+try{const baseUrl=localStorage.getItem("vasilin_server_url")||"http://localhost:8787";if(mode==="chat"){const r=await apiRequest(baseUrl,"/chat",{message:text,history});const answer=r.text||"Пустой ответ.";addTextMessage("assistant",answer);history.push({role:"user",content:text},{role:"assistant",content:answer})}else{const r=await apiRequest(baseUrl,"/image",{prompt:text});addImageMessage(r.data)}status.textContent=""}catch(e){addTextMessage("assistant","Ошибка: "+e.message);status.textContent=window.vasilin?"Проверь адрес сервера и его доступность.":"Приложение запущено без Electron-моста. Проверь сервер и открой EXE."}finally{send.disabled=false;prompt.focus()}}
 send.addEventListener("click",submit);prompt.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();submit()}});
