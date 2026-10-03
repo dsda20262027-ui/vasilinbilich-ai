@@ -1,0 +1,17 @@
+{
+  "name": "vasilinbilich-ai",
+  "version": "0.1.0",
+  "description": "ВасилинБилич AI — desktop AI assistant",
+  "main": "desktop/main.js",
+  "scripts": {"start":"electron .","dist":"electron-builder --win portable","server":"node server/server.js"},
+  "dependencies": {"openai":"^6.16.0","express":"^5.1.0","dotenv":"^16.6.1"},
+  "devDependencies": {"electron":"^39.2.7","electron-builder":"^26.0.12"},
+  "build": {
+    "appId":"ai.vasilinbilich.desktop",
+    "productName":"ВасилинБилич AI",
+    "asar":true,
+    "files":["desktop/**/*","package.json"],
+    "win":{"target":[{"target":"portable","arch":["x64"]}]},
+    "portable":{"artifactName":"VasilinBilichAI.exe"}
+  }
+}
