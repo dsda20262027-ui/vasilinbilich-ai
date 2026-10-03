@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ВасилинБилич AI</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="app">
+<header><div><div class="brand">🤖 ВасилинБилич AI</div><div class="subtitle">Твой AI-помощник</div></div><button id="settingsBtn" class="iconBtn">⚙</button></header>
+<main id="messages" class="messages"><div class="welcome"><div class="welcomeIcon">🤖</div><h1>Привет!</h1><p>Задай вопрос или создай изображение.</p></div></main>
+<section class="composer"><div class="modes"><button class="mode active" data-mode="chat">💬 Чат</button><button class="mode" data-mode="image">🖼️ Генерировать</button></div>
+<div class="inputRow"><textarea id="prompt" rows="2" placeholder="Напиши сообщение..."></textarea><button id="send" class="send">➤</button></div><div id="status" class="status"></div></section>
+</div>
+<dialog id="settings"><form method="dialog" id="settingsForm"><h2>Настройки</h2><label>Адрес AI-сервера</label><input id="serverUrl" type="url" placeholder="https://api.example.com"><p class="hint">API-ключ OpenAI здесь не нужен — он хранится только на сервере.</p><div class="dialogActions"><button value="cancel" class="secondary">Отмена</button><button id="saveSettings" value="default" class="primary">Сохранить</button></div></form></dialog>
+<script src="renderer.js"></script></body></html>
